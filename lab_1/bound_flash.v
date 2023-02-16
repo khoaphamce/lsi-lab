@@ -1,20 +1,26 @@
-module turn_on(in_lamp, out_lamp)
-    input wire [15:0] in_lamp;
-    output reg [15:0] out_lamp;
+module turn_on(
+    in_lamp,
+    out_lamp
+    );
+    input   [15:0] in_lamp;
+    output  [15:0] out_lamp;
 
-    out_lamp = (in_lamp << 1) + 1;
+    assign out_lamp = (in_lamp << 1) + 1;
 endmodule
 
 
-module turn_off(in_lamp, out_lamp)
-    input wire [15:0] in_lamp;
-    output reg [15:0] out_lamp;
+module turn_off(
+    in_lamp,
+    out_lamp
+    );
+    input   [15:0] in_lamp;
+    output  [15:0] out_lamp;
 
-    out_lamp = in_lamp >> 1;
+    assign out_lamp = (in_lamp << 1) + 1;
 endmodule
 
 
-module bound_flash(clk, flick, lamp)
+module bound_flash(clk, flick, lamp);
 
 input wire clk;
 input wire flick;
@@ -31,13 +37,11 @@ localparam s6 = 4'b0110;
 localparam s7 = 4'b0111;
 localparam s8 = 4'b1000;
 
-localparam state = 4'b0000;
-localparam bit_shifted = 4'b0000;
-localparam n_bit_shift = 4'b0000;
+reg [3:0] state = 4'b0000;
+reg [3:0] bit_shifted = 4'b0000;
+reg [3:0] n_bit_shift = 4'b0000;
 
-always(clk)
-begin
-
+always @(posedge clk) begin
     // state 0
     if (state == s0) begin
         if (flick) begin
@@ -49,18 +53,18 @@ begin
     // state 1
     else if (state == s1) begin
         if (bit_shifted < n_bit_shift)begin
-            turn_on(lamp, lamp);
-            bit_shifted = bit_shifted + 1;
+            lamp <= (lamp << 1) + 1;
+            bit_shifted <= bit_shifted + 1;
         else
-            state = s2;
-            bit_shifted = 0;
-            n_bit_shift = 5;
+            state <= s2;
+            bit_shifted <= 0;
+            n_bit_shift <= 5;
         end
     end
     // state 2
     else if (state == s2) begin
         if (bit_shifted < n_bit_shift)begin
-            turn_off(lamp, lamp);
+            lamp = lamp >> 1;
             bit_shifted = bit_shifted + 1;
         else
             state = s10;
@@ -71,7 +75,7 @@ begin
     // state 3
     else if (state == s3) begin
         if (bit_shifted < n_bit_shift)begin
-            turn_on(lamp, lamp);
+            lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
         else
             state = flick ? s4 : s5;
@@ -82,7 +86,7 @@ begin
     // state 4
     else if (state == s4) begin
         if (bit_shifted < n_bit_shift)begin
-            turn_off(lamp, lamp);
+            lamp = lamp >> 1;
             bit_shifted = bit_shifted + 1;
         else
             state = s4;
@@ -91,7 +95,7 @@ begin
     // state 5
     else if (state == s5) begin
         if (bit_shifted < n_bit_shift) begin
-            turn_off(lamp, lamp);
+            lamp = lamp >> 1;
             bit_shifted = bit_shifted + 1;
         else
             state = s6;
@@ -102,7 +106,7 @@ begin
     // state 6
     else if (state == s6) begin
         if (bit_shifted < n_bit_shift) begin
-            turn_on(lamp, lamp);
+            lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
         else
             state = flick ? s7 : s9;
@@ -113,7 +117,7 @@ begin
     // state 7
     else if (state == s7) begin
         if (bit_shifted < n_bit_shift) begin
-            turn_off(lamp, lamp);
+            lamp = lamp >> 1;
             bit_shifted = bit_shifted + 1;
         else
             state = 6;
@@ -124,7 +128,7 @@ begin
     // state 8
     else if (state == s8) begin
         if (bit_shifted < n_bit_shift) begin
-            turn_on(lamp, lamp);
+            lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
         else
             state = s0;
@@ -133,10 +137,21 @@ begin
     // state 9
     else if (state == s9) begin
         if (bit_shifted < n_bit_shift) begin
-            turn_on(lamp, lamp);
+            lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
         else
             state = flick ? s5 : s8;
+            bit_shifted = 0;
+            n_bit_shift = 6;
+        end
+    end
+    // state 10
+    else if (state == s10) begin
+        if (bit_shifted < n_bit_shift) begin
+            lamp = (lamp << 1) + 1;
+            bit_shifted = bit_shifted + 1;
+        else
+            state = flick ? s2 : s3;
             bit_shifted = 0;
             n_bit_shift = 6;
         end
