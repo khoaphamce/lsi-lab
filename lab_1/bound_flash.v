@@ -1,25 +1,3 @@
-module turn_on(
-    in_lamp,
-    out_lamp
-    );
-    input   [15:0] in_lamp;
-    output  [15:0] out_lamp;
-
-    assign out_lamp = (in_lamp << 1) + 1;
-endmodule
-
-
-module turn_off(
-    in_lamp,
-    out_lamp
-    );
-    input   [15:0] in_lamp;
-    output  [15:0] out_lamp;
-
-    assign out_lamp = (in_lamp << 1) + 1;
-endmodule
-
-
 module bound_flash(clk, flick, lamp);
 
 input wire clk;
@@ -36,6 +14,8 @@ localparam s5 = 4'b0101;
 localparam s6 = 4'b0110;
 localparam s7 = 4'b0111;
 localparam s8 = 4'b1000;
+localparam s9 = 4'b1001;
+localparam s10 = 4'b1010;
 
 reg [3:0] state = 4'b0000;
 reg [3:0] bit_shifted = 4'b0000;
@@ -44,6 +24,7 @@ reg [3:0] n_bit_shift = 4'b0000;
 always @(posedge clk) begin
     // state 0
     if (state == s0) begin
+        lamp <= 0;
         if (flick) begin
             state = s1;
             bit_shifted = 0;
@@ -55,7 +36,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift)begin
             lamp <= (lamp << 1) + 1;
             bit_shifted <= bit_shifted + 1;
-        else
+        end else begin
             state <= s2;
             bit_shifted <= 0;
             n_bit_shift <= 5;
@@ -66,7 +47,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift)begin
             lamp = lamp >> 1;
             bit_shifted = bit_shifted + 1;
-        else
+        end else begin
             state = s10;
             bit_shifted = 0;
             n_bit_shift = 5;
@@ -77,7 +58,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift)begin
             lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
-        else
+        end else begin
             state = flick ? s4 : s5;
             bit_shifted = 0;
             n_bit_shift = (state == s4) ? 11 : 5;
@@ -88,7 +69,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift)begin
             lamp = lamp >> 1;
             bit_shifted = bit_shifted + 1;
-        else
+        end else begin
             state = s4;
         end
     end
@@ -97,7 +78,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift) begin
             lamp = lamp >> 1;
             bit_shifted = bit_shifted + 1;
-        else
+        end else begin
             state = s6;
             bit_shifted = 0;
             n_bit_shift = 1;
@@ -108,7 +89,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift) begin
             lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
-        else
+        end else begin
             state = flick ? s7 : s9;
             bit_shifted = 0;
             n_bit_shift = (state == s7) ? 1 : 5;
@@ -119,7 +100,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift) begin
             lamp = lamp >> 1;
             bit_shifted = bit_shifted + 1;
-        else
+        end else begin
             state = 6;
             bit_shifted = 0;
             n_bit_shift = 1;
@@ -130,7 +111,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift) begin
             lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
-        else
+        end else begin
             state = s0;
         end
     end
@@ -139,7 +120,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift) begin
             lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
-        else
+        end else begin
             state = flick ? s5 : s8;
             bit_shifted = 0;
             n_bit_shift = 6;
@@ -150,7 +131,7 @@ always @(posedge clk) begin
         if (bit_shifted < n_bit_shift) begin
             lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
-        else
+        end else begin
             state = flick ? s2 : s3;
             bit_shifted = 0;
             n_bit_shift = 6;
