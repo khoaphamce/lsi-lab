@@ -138,7 +138,7 @@ always @(posedge clk) begin
         end else begin
             state = flick ? s5 : s8;
             bit_shifted = 0;
-            n_bit_shift = 5;
+            n_bit_shift = (state == s8) ? 4 : 5;
         end
     end
     // state 10
