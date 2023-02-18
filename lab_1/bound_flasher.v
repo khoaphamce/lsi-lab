@@ -37,22 +37,24 @@ always @(posedge clk) begin
             bit_shifted = bit_shifted + 1;
         end
         else if (flick) begin
-            state <= s1;
-            bit_shifted <= 0;
-            n_bit_shift <= 5;
+            state = s1;
+            bit_shifted = 0;
+            n_bit_shift = 4;
+            lamp = (lamp << 1) + 1;
         end else begin
-            state <= s0;
+            state = s0;
         end
     end
     // state 1
     else if (state == s1) begin
         if (bit_shifted <= n_bit_shift)begin
-            lamp <= (lamp << 1) + 1;
-            bit_shifted <= bit_shifted + 1;
+            lamp = (lamp << 1) + 1;
+            bit_shifted = bit_shifted + 1;
         end else begin
-            state <= s2;
+            state = s2;
             bit_shifted = 0;
-            n_bit_shift = 5;
+            n_bit_shift = 4;
+            lamp = lamp >> 1;
         end
     end
     // state 2
@@ -63,7 +65,8 @@ always @(posedge clk) begin
         end else begin
             state = s10;
             bit_shifted = 0;
-            n_bit_shift = 5;
+            n_bit_shift = 4;
+            lamp = (lamp << 1) + 1;
         end
     end
     // state 3
@@ -74,7 +77,8 @@ always @(posedge clk) begin
         end else begin
             state = flick ? s4 : s5;
             bit_shifted = 0;
-            n_bit_shift = (state == s4) ? 10 : 5;
+            n_bit_shift = (state == s4) ? 9 : 4;
+            lamp = lamp >> 1;
         end
     end
     // state 4
@@ -95,6 +99,7 @@ always @(posedge clk) begin
             state = s6;
             bit_shifted = 0;
             n_bit_shift = 0;
+            lamp = (lamp << 1) + 1;
         end
     end
     // state 6
@@ -105,7 +110,8 @@ always @(posedge clk) begin
         end else begin
             state = flick ? s7 : s9;
             bit_shifted = 0;
-            n_bit_shift = (state == s7) ? 1 : 4;
+            n_bit_shift = (state == s7) ? 0 : 3;
+            lamp = (state == s7) ? lamp >> 1 : (lamp << 1) + 1;
         end
     end
     // state 7
@@ -125,9 +131,10 @@ always @(posedge clk) begin
             lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
         end else begin
-            state <= s0;
-            bit_shifted <= 0;
-            n_bit_shift <= 16;
+            state = s0;
+            bit_shifted = 0;
+            n_bit_shift = 15;
+            lamp = lamp >> 1;
         end
     end
     // state 9
@@ -138,7 +145,8 @@ always @(posedge clk) begin
         end else begin
             state = flick ? s5 : s8;
             bit_shifted = 0;
-            n_bit_shift = (state == s8) ? 4 : 5;
+            n_bit_shift = (state == s8) ? 2 : 4;
+            lamp = (state == s5) ? lamp >> 1 : (lamp << 1) + 1;
         end
     end
     // state 10
@@ -149,7 +157,8 @@ always @(posedge clk) begin
         end else begin
             state = flick ? s2 : s3;
             bit_shifted = 0;
-            n_bit_shift = (state == s3) ? 4 : 5;
+            n_bit_shift = (state == s3) ? 3 : 4;
+            lamp = (state == s2) ? lamp >> 1 : (lamp << 1) + 1;
         end
     end
 end
