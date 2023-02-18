@@ -30,7 +30,11 @@ module bound_flasher_tb;
         #10
         assign flick = 1;
         #10
-        repeat(20) @ (clk);
+        repeat(5) @ (clk);
+        #10
+        assign flick = 0;
+        #10
+        repeat(90) @ (clk);
         #10
         assign flick = 0;
         #10
@@ -38,11 +42,6 @@ module bound_flasher_tb;
         #10
         assign flick = 1;
         #10
-        repeat(90) @ (clk);
-        #10
-        assign reset = 1;
-        #10
-        assign reset = 0;
         repeat(90) @ (clk);
         $finish;
     end

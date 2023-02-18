@@ -18,22 +18,30 @@ localparam s8 = 4'b1000;
 localparam s9 = 4'b1001;
 localparam s10 = 4'b1010;
 
-reg [3:0] state = 4'b0000;
-reg [3:0] bit_shifted = 4'b0000;
-reg [3:0] n_bit_shift = 4'b0000;
+reg [3:0] state = 0;
+reg [4:0] bit_shifted = 0;
+reg [4:0] n_bit_shift = 0;
 
 always @(posedge reset) begin
     state <= s0;
+    bit_shifted <= 0;
+    n_bit_shift <= 0;
+    lamp <= 0;
 end
 
 always @(posedge clk) begin
     // state 0
     if (state == s0) begin
-        lamp <= 0;
-        if (flick) begin
+        if (bit_shifted < n_bit_shift)begin
+            lamp = lamp >> 1;
+            bit_shifted = bit_shifted + 1;
+        end
+        else if (flick) begin
             state <= s1;
             bit_shifted <= 0;
             n_bit_shift <= 5;
+        end else begin
+            state <= s0;
         end
     end
     // state 1
@@ -117,7 +125,9 @@ always @(posedge clk) begin
             lamp = (lamp << 1) + 1;
             bit_shifted = bit_shifted + 1;
         end else begin
-            state = s0;
+            state <= s0;
+            bit_shifted <= 0;
+            n_bit_shift <= 16;
         end
     end
     // state 9
